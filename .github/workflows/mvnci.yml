@@ -1,0 +1,36 @@
+name: Java Maven CI
+
+on:
+  push:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+
+      # 1. Marketplace Action - Get source code
+      - name: Checkout code
+        uses: actions/checkout@v7
+
+      # 2. Marketplace Action - Setup Java
+      - name: Setup Java
+        uses: actions/setup-java@v5.7.0
+        with:
+          java-version: '5'
+          distribution: 'temurin'
+
+      # 3. Run Maven tests
+      - name: Run tests
+        run: mvn test
+
+      # 4. Build the application
+      - name: Build with Maven
+        run: mvn clean package
+
+      # 5. Marketplace Action - Upload JAR
+      - name: Upload JAR
+        uses: actions/upload-artifact@v7.0.1
+        with:
+          name: java-application
+          path: target/*.jar
