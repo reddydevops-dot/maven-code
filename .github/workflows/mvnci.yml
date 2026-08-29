@@ -1,125 +1,21 @@
-name: Java Maven CI
+name: Self Hosted Demo
 
 on:
-  push:
+  workflow_dispatch:
 
 jobs:
-
-  # ------------------------------------------------
-  # JOB 1: Checkout
-  # ------------------------------------------------
-  checkout:
-    runs-on: ubuntu-latest
+  demo:
+    runs-on: self-hosted
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v5
+      - name: Show hostname
+        run: hostname
 
+      - name: Show user
+        run: whoami
 
-  # ------------------------------------------------
-  # JOB 2: Test
-  # ------------------------------------------------
-  test:
-    needs: checkout
-    runs-on: ubuntu-latest
+      - name: Show OS
+        run: uname -a
 
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v5
-
-      - name: Setup Java
-        uses: actions/setup-java@v5
-        with:
-          java-version: '17'
-          distribution: 'temurin'
-
-      - name: Run tests
-        continue-on-error: true
-        run: mvn test
-
-
-  # ------------------------------------------------
-  # JOB 3: Build
-  # ------------------------------------------------
-  build:
-    needs: test
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v5
-
-      - name: Setup Java
-        uses: actions/setup-java@v5
-        with:
-          java-version: '17'
-          distribution: 'temurin'
-
-      - name: Build application
-        continue-on-error: true
-        run: mvn clean package
-
-
-  # ------------------------------------------------
-  # JOB 4: Upload Artifact
-  # ------------------------------------------------
-  upload-artifact:
-    needs: build
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v5
-
-      - name: Setup Java
-        uses: actions/setup-java@v5
-        with:
-          java-version: '17'
-          distribution: 'temurin'
-
-      - name: Build application
-        continue-on-error: true
-        run: mvn clean package
-
-      - name: Upload JAR
-        uses: actions/upload-artifact@v4
-        with:
-          name: java-application
-          path: target/*.jar
-          if-no-files-found: warn
-
-
-  # ------------------------------------------------
-  # JOB 5: Download Artifact
-  # ------------------------------------------------
-  download-artifact:
-    needs: upload-artifact
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Download JAR
-        uses: actions/download-artifact@v4
-        with:
-          name: java-application
-          path: downloaded-artifact
-
-      - name: Check downloaded artifact
-        run: |
-          echo "Downloaded artifact:"
-          ls -R downloaded-artifact
-
-
-  # ------------------------------------------------
-  # JOB 6: Final Report
-  # ------------------------------------------------
-  final-report:
-    needs: download-artifact
-    if: always()
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Final pipeline report
-        run: |
-          echo "================================"
-          echo "Java Maven CI Pipeline Completed"
-          echo "================================"		  
+      - name: Hello
+        run: echo "Hello from my AWS EC2!"
